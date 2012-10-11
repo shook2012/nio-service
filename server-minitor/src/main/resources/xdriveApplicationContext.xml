@@ -10,7 +10,7 @@
 
     <context:component-scan base-package="com.xunlei.netty.httpserver" />
     <context:component-scan base-package="com.xunlei.httptool" />
-     <context:component-scan base-package="com.xunlei.starter" />
+    <context:component-scan base-package="com.kewen.monitor" />
 
     <!-- 读入配置文件,扩展支持Annotation -->
     <context:component-scan base-package="com.xunlei.spring" />
@@ -18,16 +18,8 @@
         <property name="locations">
             <list>
                 <value>/serverconfig.properties</value>
-                <value>/routing.properties</value>
                  <value>/cmdmapper.properties</value>
             </list>
-        </property>
-    </bean>
-
-    <!-- ehCache的配置 -->
-    <bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-        <property name="configLocation">
-            <value>classpath:ehcache.xml</value>
         </property>
     </bean>
 </beans>
