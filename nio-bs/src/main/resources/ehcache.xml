@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true" monitoring="autodetect">
+    <diskStore path="java.io.tmpdir" />
+
+    <defaultCache maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="120" timeToLiveSeconds="120" overflowToDisk="true" maxElementsOnDisk="10000000" diskPersistent="false"
+        diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU" />
+
+    <!-- 资源审核缓存 -->
+    <cache name="resourceAudit" maxElementsInMemory="20000" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="60" timeToLiveSeconds="3600"
+        memoryStoreEvictionPolicy="LRU" />
+
+    <!-- requestToken缓存(用于conn_cmd层),请求数不会太多，timeToLiveSeconds是360s说明用户有5分钟时间来回调 -->
+    <!-- 这里因为是 requestToken ,新生成的request应该先淘汰 -->
+    <cache name="requestToken" maxElementsInMemory="99999" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="90" timeToLiveSeconds="360"
+        memoryStoreEvictionPolicy="FIFO" />
+
+    <!-- accessToken缓存 (用于token_repo层),需要考虑高并发 -->
+    <cache name="accessToken" maxElementsInMemory="20000" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="90" timeToLiveSeconds="360"
+        memoryStoreEvictionPolicy="LRU" />
+
+    <!-- 缓存转码请求,防止短的时间内多次请求转码 -->
+    <cache name="audioTransReq" maxElementsInMemory="20000" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="90" timeToLiveSeconds="1800"
+        memoryStoreEvictionPolicy="LRU" />
+
+    <!-- userinfo在agg层的简单缓存，主要为了兼容老的写的代码，后面需要把这些老代码都过一遍 失效时间这里弄成很短 -->
+    <cache name="userInfoAgg" maxElementsInMemory="20000" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="90" timeToLiveSeconds="360"
+        memoryStoreEvictionPolicy="LRU" />
+
+    <!-- 登录态缓存 失效时间这里应该弄成很短 -->
+    <cache name="sessionAgg" maxElementsInMemory="20000" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="90" timeToLiveSeconds="360"
+        memoryStoreEvictionPolicy="LRU" />
+
+    <!-- gcid and resId map -->
+    <cache name="gcidMapResId" maxElementsInMemory="20000" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="90" timeToLiveSeconds="360"
+        memoryStoreEvictionPolicy="LRU" />
+
+    <!-- datagramListResp 缓存，用于getUserFileList的分页，注意这里单元大小不可控，为了防止爆内存不宜设过大 -->
+    <cache name="datagramListResp" maxElementsInMemory="1000" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="10" timeToLiveSeconds="10"
+        memoryStoreEvictionPolicy="LRU" />
+
+    <!-- poiInfo在agg层的简单缓存 -->
+    <cache name="poiInfoAgg" maxElementsInMemory="20000" maxElementsOnDisk="0" eternal="false" overflowToDisk="false" diskSpoolBufferSizeMB="20" timeToIdleSeconds="90" timeToLiveSeconds="360"
+        memoryStoreEvictionPolicy="LRU" />
+</ehcache>
