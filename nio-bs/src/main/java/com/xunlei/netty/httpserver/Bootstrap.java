@@ -15,6 +15,7 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.socket.ServerSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioWorkerStat;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
@@ -39,14 +40,14 @@ import com.xunlei.util.concurrent.ConcurrentUtil;
  * @since 2010-3-18 下午12:52:19
  */
 @Component
-public abstract class Bootstrap {
+public class Bootstrap {
 
     /**
      * 请改用 SpringBootstrap.getContext() 或者直接用 BeanUtil的相关快捷方法
      */
     @Deprecated
     public static ApplicationContext CONTEXT;
-    public static final Logger log = Log.getLogger();
+    private static final Logger log = Log.getLogger();
     private volatile boolean stopping = false;
 
     public static boolean isArgWhat(String[] args, String... what) {
@@ -90,20 +91,20 @@ public abstract class Bootstrap {
         return main(args, null, null, springConfigLocations);
     }
 
-    public ExecutorService bossExecutor = HttpServerConfig.bossExecutor;
-    public Runnable shutdownRunanble = null;
+    private ExecutorService bossExecutor = HttpServerConfig.bossExecutor;
+    private Runnable shutdownRunanble = null;
     @Resource
-    public HttpServerPipelineFactory httpServerPipelineFactory;
+    private HttpServerPipelineFactory httpServerPipelineFactory;
     @Resource
-    public HttpsServerPipelineFactory httpsServerPipelineFactory;
+    private HttpsServerPipelineFactory httpsServerPipelineFactory;
     @Autowired
-    public HttpServerConfig config;
+    private HttpServerConfig config;
     @Autowired
-    public AbstractPageDispatcher pageDispatcher;
-    public ServerSocketChannelFactory serverSocketChannelFactory;
-    public ExecutorService workerExecutor = HttpServerConfig.workerExecutor;
+    private AbstractPageDispatcher pageDispatcher;
+    private ServerSocketChannelFactory serverSocketChannelFactory;
+    private ExecutorService workerExecutor = HttpServerConfig.workerExecutor;
     @Config
-    public long bindRetryTimeout = 60000;// 绑定重试的超时时间，默认60s
+    private long bindRetryTimeout = 60000;// 绑定重试的超时时间，默认60s
 
     private void initEnv() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
@@ -141,7 +142,11 @@ public abstract class Bootstrap {
     private void initServer() {
         // workercount 数目不能太多,因为其内部一直在 循环接收 task,占用cpu
         serverSocketChannelFactory = new NioServerSocketChannelFactory(bossExecutor, workerExecutor, config.getRealWorkerCount());
-
+        try {
+            NioWorkerStat.registerNioWorkers(serverSocketChannelFactory);// 注册到NioWorkerStat,用于统计
+        } catch (Throwable e) {
+            log.warn("{}:{}", e.getClass().getSimpleName(), e.getMessage());
+        }
         int https_port = config.getHttps_listen_port();
         int port = config.getListen_port();
         String ports = https_port > 0 ? port + "&" + https_port : port + "";
@@ -294,6 +299,4 @@ public abstract class Bootstrap {
     public boolean isStop() {
         return stopping;
     }
-    
-    public abstract void channelstatic();
 }
