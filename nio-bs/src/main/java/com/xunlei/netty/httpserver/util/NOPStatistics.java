@@ -4,12 +4,14 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.WriteCompletionEvent;
+
 import com.xunlei.netty.httpserver.component.XLContextAttachment;
 
 /**
  * @author ZengDong
  * @since 2010-5-20 обнГ03:34:28
  */
+
 public class NOPStatistics implements Statistics {
 
     public static final Statistics INSTANCE = new NOPStatistics();
