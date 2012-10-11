@@ -53,8 +53,8 @@ public class SettingCmd extends BaseStatCmd {
     private ConfigAnnotationBeanPostProcessor configProcessor;
     @Resource
     private HttpServerPipelineFactory httpServerPipelineFactory;
-    @Autowired
-    private StatCmd statCmd;
+//    @Autowired
+//    private StatCmd statCmd;
 
     /**
      * <pre>
@@ -263,7 +263,7 @@ public class SettingCmd extends BaseStatCmd {
      */
     public Object resetStat(XLHttpRequest request, XLHttpResponse response) throws Exception {
         init(request, response);
-        statCmd.reset();
+//        statCmd.reset();
         return "reset stat success";
     }
 
